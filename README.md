@@ -1,2 +1,1 @@
-# tago-sdk-go
-TagoIO SDK para Go
+# Tago SDK para GO

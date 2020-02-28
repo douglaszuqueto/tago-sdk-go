@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/douglaszuqueto/tago-go-sdk/pkg/api"
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/api"
 )
 
 var (

@@ -1,6 +1,10 @@
 package admin
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/api"
+)
 
 // Manager Manager
 type Manager interface {
@@ -11,14 +15,19 @@ type Manager interface {
 }
 
 type manager struct {
-	token string
+	token  string
+	client api.Client
 }
 
 // New New
 func New(token string) Manager {
-	return &manager{
+	m := &manager{
 		token: token,
 	}
+
+	m.client = *api.NewClient(token)
+
+	return m
 }
 
 // Info Info
@@ -30,7 +39,7 @@ func (m *manager) Info() {
 func (m *manager) Device() (Device, error) {
 	fmt.Println("Device manager")
 
-	e := newDevice()
+	e := newDevice(m.client)
 
 	return e, nil
 }

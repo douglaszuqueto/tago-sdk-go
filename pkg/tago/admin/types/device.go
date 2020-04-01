@@ -2,14 +2,23 @@ package types
 
 // DeviceListResponse DeviceListResponse
 type DeviceListResponse struct {
-	Result []Device `json:"result"`
-	Status bool     `json:"status"`
+	Result  []Device `json:"result"`
+	Status  bool     `json:"status"`
+	Message string   `json:"message"`
 }
 
 // DeviceGetResponse DeviceListResponse
 type DeviceGetResponse struct {
-	Result DeviceGet `json:"result"`
-	Status bool      `json:"status"`
+	Result  DeviceGet `json:"result"`
+	Status  bool      `json:"status"`
+	Message string    `json:"message"`
+}
+
+// DeviceTokenResponse DeviceTokenResponse
+type DeviceTokenResponse struct {
+	Result  []DeviceToken `json:"result"`
+	Status  bool          `json:"status"`
+	Message string        `json:"message"`
 }
 
 // DeviceTag DeviceTag
@@ -49,12 +58,6 @@ type DeviceGet struct {
 	InspectedAt    string       `json:"inspected_at"`
 	LastInput      string       `json:"last_input"`
 	LastOutput     string       `json:"last_output"`
-}
-
-// DeviceTokenResponse DeviceTokenResponse
-type DeviceTokenResponse struct {
-	Result []DeviceToken `json:"result"`
-	Status bool          `json:"status"`
 }
 
 // DeviceToken DeviceToken

@@ -2,14 +2,16 @@ package types
 
 // BucketListResponse BucketListResponse
 type BucketListResponse struct {
-	Result []Bucket `json:"result"`
-	Status bool     `json:"status"`
+	Result  []Bucket `json:"result"`
+	Status  bool     `json:"status"`
+	Message string   `json:"message"`
 }
 
 // BucketResponse BucketResponse
 type BucketResponse struct {
-	Result Bucket `json:"result"`
-	Status bool   `json:"status"`
+	Result  Bucket `json:"result"`
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
 }
 
 // BucketList BucketList

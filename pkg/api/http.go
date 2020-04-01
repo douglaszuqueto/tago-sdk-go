@@ -3,9 +3,9 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 // Client Client
@@ -25,7 +25,7 @@ func Tago(token string) *Client {
 }
 
 // Do Do
-func (c *Client) Do(path string, data interface{}, payload interface{}) error {
+func (c *Client) Do(path string, method string, data interface{}, payload interface{}) error {
 	var p []byte
 
 	switch data.(type) {
@@ -40,8 +40,6 @@ func (c *Client) Do(path string, data interface{}, payload interface{}) error {
 		}
 	}
 
-	fmt.Println("Data:", string(p))
-
 	client := &http.Client{}
 
 	uri := &url.URL{
@@ -50,7 +48,12 @@ func (c *Client) Do(path string, data interface{}, payload interface{}) error {
 		Scheme: "https",
 	}
 
-	req, err := http.NewRequest("POST", uri.String(), bytes.NewBuffer(p))
+	if path == "/device" {
+		tagoGw := os.Getenv("TAGO_GW")
+		uri.RawQuery = "filter%5Btags%5D%5B0%5D%5Bkey%5D=gateway&filter%5Btags%5D%5B0%5D%5Bvalue%5D=" + tagoGw
+	}
+
+	req, err := http.NewRequest(method, uri.String(), bytes.NewBuffer(p))
 	if err != nil {
 		return err
 	}

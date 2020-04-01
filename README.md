@@ -10,3 +10,16 @@ ou (linux)
 ```
 ./bin/tago --token="your_token" --payload="template.json"
 ```
+
+## Estrutura
+
+* SDK
+    * Admin
+        * Device
+        * Bucket
+    * Device
+        * Data
+        * PubSub
+            * Sub
+            * Pub
+            * Debug

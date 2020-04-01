@@ -1,7 +1,7 @@
 package api
 
 import (
-	"fmt"
+	"net/http"
 	"time"
 )
 
@@ -33,10 +33,9 @@ func NewDevice(client *Client) *Device {
 
 // Insert Insert
 func (d *Device) Insert(data interface{}) (DeviceDataResponse, error) {
-	fmt.Println("Insert data")
 	var payload DeviceDataResponse
 
-	d.client.Do("/data", data, &payload)
+	d.client.Do("/data", http.MethodPost, data, &payload)
 
 	return payload, nil
 }

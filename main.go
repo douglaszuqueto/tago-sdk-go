@@ -1,64 +1,45 @@
 package main
 
 import (
-	"encoding/json"
-	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 
-	"github.com/douglaszuqueto/tago-sdk-go/pkg/api"
-)
-
-var (
-	accessToken = flag.String("token", "", "Account token or Device token")
-	payloadPath = flag.String("payload", "", "JSON payoad path")
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago"
 )
 
 func main() {
-	flag.Parse()
+	cli := tago.New()
+	cli.Info()
 
-	if len(*accessToken) == 0 {
-		panic("Account token or Device token is required!")
-	}
+	fmt.Println()
 
-	if len(*payloadPath) == 0 {
-		panic("Payload path is required!")
-	}
+	// Admin manager
 
-	file, err := os.Open(*payloadPath)
+	admin, err := cli.Admin(os.Getenv("ADMIN_TOKEN"))
 	if err != nil {
-		panic("Invalid file:" + err.Error())
+		panic(err)
 	}
 
-	by, err := ioutil.ReadAll(file)
+	admin.Info()
+
+	// Device manager
+
+	device, err := admin.Device()
 	if err != nil {
-		panic("Invalid file")
+		panic(err)
 	}
 
-	var p api.Data
+	device.Get()
+	device.List()
+	device.Token()
 
-	if err := json.Unmarshal(by, &p); err != nil {
-		panic("JSON error:" + err.Error())
-	}
+	// Bucket manager
 
-	tagoClient := api.Tago(*accessToken)
-
-	device := api.NewDevice(tagoClient)
-
-	// payload := api.Data{
-	// 	Variable: "temperature",
-	// 	Value:    25.5,
-	// 	Time:     time.Now(),
-	// }
-
-	dev, err := device.Insert(by)
+	bucket, err := admin.Bucket()
 	if err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
 
-	fmt.Println("Status:", dev.Status)
-	fmt.Println("Result:", dev.Result)
-	fmt.Println("Message:", dev.Message)
+	bucket.Get()
+	bucket.List()
 }

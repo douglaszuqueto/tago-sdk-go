@@ -15,7 +15,9 @@ func main() {
 
 	// Admin manager
 
-	admin, err := cli.Admin(os.Getenv("ADMIN_TOKEN"))
+	adminToken := os.Getenv("ADMIN_TOKEN")
+
+	admin, err := cli.Admin(adminToken)
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +47,9 @@ func main() {
 
 	// Device
 
-	dev, err := cli.Device("123")
+	deviceToken := os.Getenv("DEVICE_TOKEN")
+
+	dev, err := cli.Device(deviceToken)
 	if err != nil {
 		panic(err)
 	}

@@ -55,7 +55,7 @@ func (c *Client) do(method, path string, data interface{}, payload interface{}) 
 
 	dec := json.NewDecoder(resp.Body)
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
 		var response types.Response
 
 		err = dec.Decode(&response)

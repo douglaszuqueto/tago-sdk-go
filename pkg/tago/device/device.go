@@ -2,7 +2,10 @@ package device
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/admin/types"
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/api"
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/device/pubsub"
 )
 
@@ -30,7 +33,16 @@ func (d *defaultDevice) Info() {
 }
 
 func (d *defaultDevice) Data() {
-	fmt.Println("Data")
+	client := *api.NewClient(d.token)
+
+	var response types.DeviceDataResponse
+
+	err := client.Post("/data", getPayload(), &response)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Ingesting data: %s\n", response.Result)
 }
 
 func (d *defaultDevice) PubSub() (pubsub.PubSub, error) {
@@ -39,4 +51,12 @@ func (d *defaultDevice) PubSub() (pubsub.PubSub, error) {
 	ps := pubsub.New()
 
 	return ps, nil
+}
+
+func getPayload() types.Data {
+	return types.Data{
+		Variable: "temperature",
+		Value:    25.5,
+		Time:     time.Now(),
+	}
 }

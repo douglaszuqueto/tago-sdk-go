@@ -4,11 +4,13 @@ import (
 	"fmt"
 
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/admin"
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/device"
 )
 
 // Tago Tago
 type Tago interface {
 	Admin(token string) (admin.Manager, error)
+	Device(token string) (device.Device, error)
 	Info()
 }
 
@@ -33,4 +35,11 @@ func (t *Default) Admin(token string) (admin.Manager, error) {
 	manager := admin.New(token)
 
 	return manager, nil
+}
+
+// Device Device
+func (t *Default) Device(token string) (device.Device, error) {
+	e := device.New(token)
+
+	return e, nil
 }

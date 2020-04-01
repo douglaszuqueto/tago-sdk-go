@@ -42,4 +42,23 @@ func main() {
 
 	bucket.Get()
 	bucket.List()
+
+	// Device
+
+	dev, err := cli.Device("123")
+	if err != nil {
+		panic(err)
+	}
+
+	dev.Info()
+	dev.Data()
+
+	// Device pubsub
+
+	p, err := dev.PubSub()
+	if err != nil {
+		panic(err)
+	}
+
+	p.Debug()
 }

@@ -3,8 +3,11 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/url"
+
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/admin/types"
 )
 
 // Client Client
@@ -51,6 +54,20 @@ func (c *Client) do(method, path string, data interface{}, payload interface{}) 
 	}
 
 	dec := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		var response types.Response
+
+		err = dec.Decode(&response)
+		if err != nil {
+			return err
+		}
+
+		// fmt.Println("Error:", resp.StatusCode, response.Message, response.Status)
+
+		return errors.New(response.Message)
+	}
+
 	err = dec.Decode(&payload)
 	if err != nil {
 		return err

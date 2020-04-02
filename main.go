@@ -47,21 +47,21 @@ func main() {
 
 	// Device
 
-	deviceToken := os.Getenv("DEVICE_TOKEN")
+	// deviceToken := os.Getenv("DEVICE_TOKEN")
 
-	dev, err := cli.Device(deviceToken)
-	if err != nil {
-		panic(err)
-	}
+	// dev, err := cli.Device(deviceToken)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	// dev.Data()
 
 	// Device pubsub
 
-	p, err := dev.PubSub()
-	if err != nil {
-		panic(err)
-	}
+	// p, err := dev.PubSub()
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	// payload := util.GeneratePayload()
 
@@ -72,25 +72,25 @@ func main() {
 
 	// p.Pub(msgBytes)
 
-	data, err := p.Sub()
-	if err != nil {
-		panic(err)
-	}
+	// data, err := p.Sub()
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	go func() {
-		for d := range data {
-			fmt.Println(d.Topic, d.Message.String())
-		}
-	}()
+	// go func() {
+	// 	for d := range data {
+	// 		fmt.Println(d.Topic, d.Message.String())
+	// 	}
+	// }()
 
-	debug, err := p.Debug()
-	if err != nil {
-		panic(err)
-	}
+	// debug, err := p.Debug()
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	for d := range debug {
-		fmt.Println(d.Topic, d.Message.String())
-	}
+	// for d := range debug {
+	// 	fmt.Println(d.Topic, d.Message.String())
+	// }
 
 	fmt.Scanln()
 }

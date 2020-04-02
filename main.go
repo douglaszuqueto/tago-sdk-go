@@ -54,8 +54,7 @@ func main() {
 		panic(err)
 	}
 
-	dev.Info()
-	dev.Data()
+	// dev.Data()
 
 	// Device pubsub
 
@@ -64,5 +63,34 @@ func main() {
 		panic(err)
 	}
 
-	p.Debug()
+	// payload := util.GeneratePayload()
+
+	// msgBytes, err := json.Marshal(payload)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// p.Pub(msgBytes)
+
+	data, err := p.Sub()
+	if err != nil {
+		panic(err)
+	}
+
+	go func() {
+		for d := range data {
+			fmt.Println(d.Topic, d.Message.String())
+		}
+	}()
+
+	debug, err := p.Debug()
+	if err != nil {
+		panic(err)
+	}
+
+	for d := range debug {
+		fmt.Println(d.Topic, d.Message.String())
+	}
+
+	fmt.Scanln()
 }

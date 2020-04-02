@@ -2,4 +2,7 @@ module github.com/douglaszuqueto/tago-sdk-go
 
 go 1.12
 
-require google.golang.org/genproto v0.0.0-20200401122417-09ab7b7031d2 // indirect
+require (
+	github.com/eclipse/paho.mqtt.golang v1.2.0
+	golang.org/x/net v0.0.0-20190311183353-d8887717615a // indirect
+)

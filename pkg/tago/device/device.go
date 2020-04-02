@@ -2,19 +2,17 @@ package device
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/admin/types"
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/api"
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/device/pubsub"
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/util"
 )
 
 // Device Device
 type Device interface {
 	Data()
 	PubSub() (pubsub.PubSub, error)
-
-	Info()
 }
 
 type defaultDevice struct {
@@ -28,16 +26,10 @@ func New(token string) Device {
 	}
 }
 
-func (d *defaultDevice) Info() {
-	fmt.Println("Info")
-}
-
 func (d *defaultDevice) Data() {
-	client := *api.NewClient(d.token)
-
 	var response types.DeviceDataResponse
 
-	err := client.Post("/data", getPayload(), &response)
+	err := api.NewClient(d.token).Post("/data", util.GeneratePayload(), &response)
 	if err != nil {
 		panic(err)
 	}
@@ -46,17 +38,7 @@ func (d *defaultDevice) Data() {
 }
 
 func (d *defaultDevice) PubSub() (pubsub.PubSub, error) {
-	fmt.Println("PubSub")
-
-	ps := pubsub.New()
+	ps := pubsub.New(d.token)
 
 	return ps, nil
-}
-
-func getPayload() types.Data {
-	return types.Data{
-		Variable: "temperature",
-		Value:    25.5,
-		Time:     time.Now(),
-	}
 }

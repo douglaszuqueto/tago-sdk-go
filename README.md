@@ -38,3 +38,15 @@ uri := &url.URL{
 
 fmt.Println(uri.String())
 ```
+
+```go
+scanner := bufio.NewScanner(os.Stdin)
+
+for scanner.Scan() {
+    fmt.Println(scanner.Text())
+}
+
+if err := scanner.Err(); err != nil {
+    log.Println(err)
+}
+```

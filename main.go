@@ -26,24 +26,46 @@ func main() {
 
 	// Device manager
 
-	device, err := admin.Device()
+	deviceAdm, err := admin.Device()
 	if err != nil {
 		panic(err)
 	}
 
-	device.Get()
-	device.List()
-	device.Token()
+	device, err := deviceAdm.Get("5e83e40caf0d7a001b2b203e")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(device.Name)
+
+	deviceList, err := deviceAdm.List()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, d := range deviceList {
+		fmt.Println(d.Name, d.Tags)
+	}
+
+	token, err := deviceAdm.Token("5e83e40caf0d7a001b2b203e")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(token[0].Name, token[0].Token)
+
+	// device.List()
+	// device.Token()
 
 	// Bucket manager
 
-	bucket, err := admin.Bucket()
-	if err != nil {
-		panic(err)
-	}
+	// bucket, err := admin.Bucket()
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	bucket.Get()
-	bucket.List()
+	// bucket.Get()
+	// bucket.List()
 
 	// Device
 

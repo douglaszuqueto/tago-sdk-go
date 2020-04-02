@@ -1,17 +1,15 @@
 package admin
 
 import (
-	"fmt"
-
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/admin/types"
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/api"
 )
 
 // Device Device
 type Device interface {
-	Get()
-	List()
-	Token()
+	Get(deviceID string) (*types.DeviceGet, error)
+	List() ([]types.Device, error)
+	Token(deviceID string) ([]types.DeviceToken, error)
 }
 
 type device struct {
@@ -25,43 +23,37 @@ func newDevice(client api.Client) Device {
 }
 
 // Get Get
-func (d *device) Get() {
-	fmt.Println("Get")
-
+func (d *device) Get(deviceID string) (*types.DeviceGet, error) {
 	var device types.DeviceGetResponse
 
-	err := d.client.Get("/device/"+"5e83e40caf0d7a001b2b203e", &device)
+	err := d.client.Get("/device/"+deviceID, &device)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	fmt.Println(device.Result.Name)
+	return &device.Result, nil
 }
 
 // List List
-func (d *device) List() {
-	fmt.Println("List")
+func (d *device) List() ([]types.Device, error) {
+	var devices types.DeviceListResponse
 
-	var device types.DeviceListResponse
-
-	err := d.client.Get("/device", &device)
+	err := d.client.Get("/device", &devices)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	fmt.Println(device.Result)
+	return devices.Result, nil
 }
 
 // Token Token
-func (d *device) Token() {
-	fmt.Println("Token")
-
+func (d *device) Token(deviceID string) ([]types.DeviceToken, error) {
 	var device types.DeviceTokenResponse
 
-	err := d.client.Get("/device/token/"+"5e83e40caf0d7a001b2b203e", &device)
+	err := d.client.Get("/device/token/"+deviceID, &device)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	fmt.Println(device.Result)
+	return device.Result, nil
 }

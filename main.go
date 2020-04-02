@@ -1,10 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago"
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/util"
 )
 
 func main() {
@@ -85,39 +88,54 @@ func main() {
 
 	// Device pubsub
 
-	// p, err := dev.PubSub()
-	// if err != nil {
-	// 	panic(err)
-	// }
+	p, err := dev.PubSub()
+	if err != nil {
+		panic(err)
+	}
 
-	// payload := util.GeneratePayload()
+	payload := util.GeneratePayload()
 
-	// msgBytes, err := json.Marshal(payload)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	msgBytes, err := json.Marshal(payload)
+	if err != nil {
+		panic(err)
+	}
 
-	// p.Pub(msgBytes)
+	err = p.Pub(msgBytes)
+	if err != nil {
+		panic(err)
+	}
 
-	// data, err := p.Sub()
-	// if err != nil {
-	// 	panic(err)
-	// }
+	data, err := p.Sub()
+	if err != nil {
+		panic(err)
+	}
 
-	// go func() {
-	// 	for d := range data {
-	// 		fmt.Println(d.Topic, d.Message.String())
-	// 	}
-	// }()
+	go func() {
+		for d := range data {
+			fmt.Println(d.Topic, d.Message.String())
+		}
+	}()
 
-	// debug, err := p.Debug()
-	// if err != nil {
-	// 	panic(err)
-	// }
+	debug, err := p.Debug()
+	if err != nil {
+		panic(err)
+	}
 
-	// for d := range debug {
-	// 	fmt.Println(d.Topic, d.Message.String())
-	// }
+	go func() {
+		for d := range debug {
+			fmt.Println(d.Topic, d.Message.String())
+		}
+	}()
+
+	time.Sleep(10 * time.Second)
+
+	if err := p.UnsubscribeData(); err != nil {
+		panic(err)
+	}
+
+	if err := p.UnsubscribeDebug(); err != nil {
+		panic(err)
+	}
 
 	fmt.Scanln()
 }

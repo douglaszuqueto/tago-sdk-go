@@ -12,10 +12,10 @@ type PubSub interface {
 	Sub() (<-chan *mqtt.Payload, error)
 	Debug() (<-chan *mqtt.Payload, error)
 
-	Pub(msg []byte)
+	Pub(msg []byte) error
 
-	UnsubscribeData()
-	UnsubscribeDebug()
+	UnsubscribeData() error
+	UnsubscribeDebug() error
 }
 
 type ps struct {
@@ -35,6 +35,14 @@ type ps struct {
 	debugCh chan *mqtt.Payload
 }
 
+var (
+	dataTopic  = "edge/data"
+	debugTopic = "tago/debug"
+
+	dataChLen  = 1
+	debugChLen = 1
+)
+
 // New New
 func New(token string) PubSub {
 	c := &ps{
@@ -48,17 +56,20 @@ func New(token string) PubSub {
 	return c
 }
 
-var (
-	dataTopic  = "edge/data"
-	debugTopic = "tago/debug"
+func (d *ps) Pub(msg []byte) error {
+	token := d.mqtt.client.Publish("tago/data/post", msg)
 
-	dataChLen  = 1
-	debugChLen = 1
-)
+	if token.Error() != nil {
+		return token.Error()
+	}
+
+	return nil
+}
 
 func (d *ps) Sub() (<-chan *mqtt.Payload, error) {
 	d.Lock()
 	defer d.Unlock()
+
 	if d.dataCh != nil {
 		return d.dataCh, nil
 	}
@@ -71,26 +82,21 @@ func (d *ps) Sub() (<-chan *mqtt.Payload, error) {
 
 		d.dataCh <- &msg
 	})
+
 	token.Wait()
 	err := token.Error()
 	if err != nil {
 		close(d.dataCh)
 		d.dataCh = nil
 	}
+
 	return d.dataCh, err
-}
-
-func (d *ps) Pub(msg []byte) {
-	token := d.mqtt.client.Publish("tago/data/post", msg)
-
-	if token.Error() != nil {
-		panic(token.Error().Error())
-	}
 }
 
 func (d *ps) Debug() (<-chan *mqtt.Payload, error) {
 	d.Lock()
 	defer d.Unlock()
+
 	if d.debugCh != nil {
 		return d.debugCh, nil
 	}
@@ -103,27 +109,33 @@ func (d *ps) Debug() (<-chan *mqtt.Payload, error) {
 
 		d.debugCh <- &msg
 	})
+
 	token.Wait()
 	err := token.Error()
 	if err != nil {
 		close(d.debugCh)
 		d.debugCh = nil
 	}
+
 	return d.debugCh, err
 }
 
-func (d *ps) UnsubscribeData() {
+func (d *ps) UnsubscribeData() error {
 	token := d.mqtt.client.Unsubscribe(dataTopic)
 
 	if token.Error() != nil {
-		panic(token.Error().Error())
+		return token.Error()
 	}
+
+	return nil
 }
 
-func (d *ps) UnsubscribeDebug() {
+func (d *ps) UnsubscribeDebug() error {
 	token := d.mqtt.client.Unsubscribe(debugTopic)
 
 	if token.Error() != nil {
-		panic(token.Error().Error())
+		return token.Error()
 	}
+
+	return nil
 }

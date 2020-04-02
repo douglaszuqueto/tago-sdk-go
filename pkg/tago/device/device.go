@@ -1,7 +1,7 @@
 package device
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/admin/types"
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/api"
@@ -11,7 +11,7 @@ import (
 
 // Device Device
 type Device interface {
-	Data()
+	Data() (bool, error)
 	PubSub() (pubsub.PubSub, error)
 }
 
@@ -26,15 +26,19 @@ func New(token string) Device {
 	}
 }
 
-func (d *defaultDevice) Data() {
+func (d *defaultDevice) Data() (bool, error) {
 	var response types.DeviceDataResponse
 
 	err := api.NewClient(d.token).Post("/data", util.GeneratePayload(), &response)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 
-	fmt.Printf("Ingesting data: %s\n", response.Result)
+	if !response.Status {
+		return false, errors.New(response.Result)
+	}
+
+	return response.Status, nil
 }
 
 func (d *defaultDevice) PubSub() (pubsub.PubSub, error) {

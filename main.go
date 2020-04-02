@@ -69,14 +69,19 @@ func main() {
 
 	// Device
 
-	// deviceToken := os.Getenv("DEVICE_TOKEN")
+	deviceToken := os.Getenv("DEVICE_TOKEN")
 
-	// dev, err := cli.Device(deviceToken)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	dev, err := cli.Device(deviceToken)
+	if err != nil {
+		panic(err)
+	}
 
-	// dev.Data()
+	res, err := dev.Data()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Data:", res)
 
 	// Device pubsub
 

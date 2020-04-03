@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 	"time"
 
@@ -43,7 +44,11 @@ func main() {
 
 	fmt.Println(device.Name)
 
-	deviceList, err := deviceAdm.List("")
+	q, _ := url.ParseQuery("")
+	q.Add("filter[tags][0][key]", "gw")
+	q.Add("filter[tags][0][value]", "gw-01")
+
+	deviceList, err := deviceAdm.List(q.Encode())
 	if err != nil {
 		panic(err)
 	}

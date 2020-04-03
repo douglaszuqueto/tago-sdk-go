@@ -41,7 +41,7 @@ func (c *ps) closeMQTT() error {
 	}
 
 	log.Println("tago-sdk: Disconnecting from MQTT...")
-	c.mqtt.cancel()
+
 	c.mqtt.client.Disconnect()
 	c.mqtt.client = nil
 

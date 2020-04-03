@@ -2,6 +2,7 @@ package pubsub
 
 import (
 	"context"
+	"log"
 	"sync"
 
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/core/mqtt"
@@ -16,6 +17,8 @@ type PubSub interface {
 
 	UnsubscribeData() error
 	UnsubscribeDebug() error
+
+	Close()
 }
 
 type ps struct {
@@ -127,6 +130,14 @@ func (d *ps) UnsubscribeData() error {
 		return token.Error()
 	}
 
+	d.Lock()
+	defer d.Unlock()
+
+	if d.dataCh != nil {
+		close(d.dataCh)
+		d.dataCh = nil
+	}
+
 	return nil
 }
 
@@ -137,5 +148,34 @@ func (d *ps) UnsubscribeDebug() error {
 		return token.Error()
 	}
 
+	d.Lock()
+	defer d.Unlock()
+
+	if d.debugCh != nil {
+		close(d.debugCh)
+		d.debugCh = nil
+	}
+
 	return nil
+}
+
+func (d *ps) Close() {
+	log.Println("Fechando conexões!")
+
+	d.closeMQTT()
+
+	d.Lock()
+	defer d.Unlock()
+
+	if d.debugCh != nil {
+		close(d.debugCh)
+		d.debugCh = nil
+	}
+
+	if d.dataCh != nil {
+		close(d.dataCh)
+		d.dataCh = nil
+	}
+
+	log.Println("Conexões fechadas")
 }

@@ -11,6 +11,8 @@ import (
 )
 
 func main() {
+	util.StatsLoop()
+
 	cli := tago.New()
 	cli.Info()
 
@@ -127,7 +129,7 @@ func main() {
 		}
 	}()
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	if err := p.UnsubscribeData(); err != nil {
 		panic(err)
@@ -137,5 +139,9 @@ func main() {
 		panic(err)
 	}
 
+	p.Close()
+
 	fmt.Scanln()
+
+	// p.Close()
 }

@@ -26,7 +26,7 @@ func NewClient(token string) *Client {
 	}
 }
 
-func (c *Client) do(method, path string, data interface{}, payload interface{}) error {
+func (c *Client) do(method, path string, filter string, data interface{}, payload interface{}) error {
 	// p, err := json.Marshal(data)
 	// if err != nil {
 	// 	return err
@@ -52,6 +52,10 @@ func (c *Client) do(method, path string, data interface{}, payload interface{}) 
 		Host:   "api.tago.io",
 		Scheme: "https",
 		Path:   path,
+	}
+
+	if len(filter) > 0 {
+		uri.RawQuery = filter
 	}
 
 	req, err := http.NewRequest(method, uri.String(), bytes.NewBuffer(p))
@@ -91,13 +95,13 @@ func (c *Client) do(method, path string, data interface{}, payload interface{}) 
 }
 
 // Get Get
-func (c *Client) Get(path string, response interface{}) error {
-	return c.do(http.MethodGet, path, nil, response)
+func (c *Client) Get(path string, filter string, response interface{}) error {
+	return c.do(http.MethodGet, path, filter, nil, response)
 }
 
 // Post Post
 func (c *Client) Post(path string, data interface{}, response interface{}) error {
-	return c.do(http.MethodPost, path, data, response)
+	return c.do(http.MethodPost, path, "", data, response)
 }
 
 // Do Do

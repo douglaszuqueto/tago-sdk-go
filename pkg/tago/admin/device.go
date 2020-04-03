@@ -8,7 +8,7 @@ import (
 // Device Device
 type Device interface {
 	Get(deviceID string) (*types.DeviceGet, error)
-	List() ([]types.Device, error)
+	List(filter string) ([]types.Device, error)
 	Token(deviceID string) ([]types.DeviceToken, error)
 }
 
@@ -26,7 +26,7 @@ func newDevice(client api.Client) Device {
 func (d *device) Get(deviceID string) (*types.DeviceGet, error) {
 	var device types.DeviceGetResponse
 
-	err := d.client.Get("/device/"+deviceID, &device)
+	err := d.client.Get("/device/"+deviceID, "", &device)
 	if err != nil {
 		return nil, err
 	}
@@ -35,10 +35,10 @@ func (d *device) Get(deviceID string) (*types.DeviceGet, error) {
 }
 
 // List List
-func (d *device) List() ([]types.Device, error) {
+func (d *device) List(filter string) ([]types.Device, error) {
 	var devices types.DeviceListResponse
 
-	err := d.client.Get("/device", &devices)
+	err := d.client.Get("/device", filter, &devices)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (d *device) List() ([]types.Device, error) {
 func (d *device) Token(deviceID string) ([]types.DeviceToken, error) {
 	var device types.DeviceTokenResponse
 
-	err := d.client.Get("/device/token/"+deviceID, &device)
+	err := d.client.Get("/device/token/"+deviceID, "", &device)
 	if err != nil {
 		return nil, err
 	}

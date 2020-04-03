@@ -43,7 +43,7 @@ func main() {
 
 	fmt.Println(device.Name)
 
-	deviceList, err := deviceAdm.List()
+	deviceList, err := deviceAdm.List("")
 	if err != nil {
 		panic(err)
 	}

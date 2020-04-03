@@ -6,12 +6,11 @@ import (
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/admin/types"
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/api"
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/device/pubsub"
-	"github.com/douglaszuqueto/tago-sdk-go/pkg/util"
 )
 
 // Device Device
 type Device interface {
-	Data() (bool, error)
+	Data(msg interface{}) (bool, error)
 	PubSub() (pubsub.PubSub, error)
 }
 
@@ -26,10 +25,10 @@ func New(token string) Device {
 	}
 }
 
-func (d *defaultDevice) Data() (bool, error) {
+func (d *defaultDevice) Data(msg interface{}) (bool, error) {
 	var response types.DeviceDataResponse
 
-	err := api.NewClient(d.token).Post("/data", util.GeneratePayload(), &response)
+	err := api.NewClient(d.token).Post("/data", msg, &response)
 	if err != nil {
 		return false, err
 	}

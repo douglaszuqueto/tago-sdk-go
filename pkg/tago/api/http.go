@@ -27,9 +27,23 @@ func NewClient(token string) *Client {
 }
 
 func (c *Client) do(method, path string, data interface{}, payload interface{}) error {
-	p, err := json.Marshal(data)
-	if err != nil {
-		return err
+	// p, err := json.Marshal(data)
+	// if err != nil {
+	// 	return err
+	// }
+
+	var p []byte
+
+	switch data.(type) {
+	case []byte:
+		p = data.([]byte)
+	case types.Data:
+		var err error
+
+		p, err = json.Marshal(data)
+		if err != nil {
+			return err
+		}
 	}
 
 	client := &http.Client{}

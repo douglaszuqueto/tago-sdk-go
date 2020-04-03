@@ -81,7 +81,14 @@ func main() {
 		panic(err)
 	}
 
-	res, err := dev.Data()
+	payload := util.GeneratePayload()
+
+	msgBytes, err := json.Marshal(payload)
+	if err != nil {
+		panic(err)
+	}
+
+	res, err := dev.Data(payload)
 	if err != nil {
 		panic(err)
 	}
@@ -95,9 +102,9 @@ func main() {
 		panic(err)
 	}
 
-	payload := util.GeneratePayload()
+	payload = util.GeneratePayload()
 
-	msgBytes, err := json.Marshal(payload)
+	msgBytes, err = json.Marshal(payload)
 	if err != nil {
 		panic(err)
 	}

@@ -77,7 +77,7 @@ func (c *defaultClient) connect(clientID string, uri *url.URL) mqtt.Client {
 	opts.SetPingTimeout(5 * time.Second)
 	opts.SetConnectTimeout(10 * time.Second)
 	opts.SetWriteTimeout(10 * time.Second)
-	opts.SetMaxReconnectInterval(5 * time.Second)
+	// opts.SetMaxReconnectInterval(5 * time.Second)
 
 	opts.SetConnectionLostHandler(c.connectionLostHandler)
 	opts.SetOnConnectHandler(c.onConnectHandler)

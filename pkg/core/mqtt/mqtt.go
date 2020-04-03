@@ -52,7 +52,6 @@ func NewClient(id string, host, user, password string) Client {
 func (c *defaultClient) connectionLostHandler(client mqtt.Client, err error) {
 	log.Println("[MQTT] Conexão perdida:")
 	c.isConnected = false
-	c.connectLoop()
 }
 
 func (c *defaultClient) onConnectHandler(client mqtt.Client) {
@@ -72,9 +71,9 @@ func (c *defaultClient) connect(clientID string, uri *url.URL) mqtt.Client {
 
 	opts.SetClientID(clientID)
 	opts.SetCleanSession(true)
-	opts.SetAutoReconnect(false)
+	opts.SetAutoReconnect(true)
 
-	opts.SetKeepAlive(30 * time.Second)
+	opts.SetKeepAlive(5 * time.Second)
 	opts.SetPingTimeout(30 * time.Second)
 	opts.SetConnectTimeout(30 * time.Second)
 	opts.SetWriteTimeout(30 * time.Second)
@@ -110,21 +109,12 @@ func (c *defaultClient) connectLoop() {
 	for {
 		if token := c.client.Connect(); token.Wait() && token.Error() != nil {
 			log.Println("[MQTT] tentando reconectar-se:", token.Error())
-		} else {
-			break
+			time.Sleep(1000 * time.Millisecond)
+
+			return
 		}
 
-		time.Sleep(1000 * time.Millisecond)
-	}
-}
-
-func (c *defaultClient) reconnectLoop() {
-	for {
-		if c.isConnected {
-			break
-		}
-
-		c.connectLoop()
+		break
 	}
 }
 

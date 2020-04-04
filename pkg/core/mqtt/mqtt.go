@@ -32,6 +32,8 @@ type defaultClient struct {
 	isConnected bool
 
 	sync.Mutex
+	rw sync.RWMutex
+
 	subscriptions map[string]mqtt.MessageHandler
 }
 
@@ -51,11 +53,18 @@ func NewClient(id string, host, user, password string) Client {
 
 func (c *defaultClient) connectionLostHandler(client mqtt.Client, err error) {
 	log.Println("[MQTT] Conexão perdida:")
+
+	c.Lock()
+	defer c.Unlock()
+
 	c.isConnected = false
 }
 
 func (c *defaultClient) onConnectHandler(client mqtt.Client) {
 	log.Println("[MQTT] Conectado:")
+	c.Lock()
+	defer c.Unlock()
+
 	c.isConnected = true
 
 	for topic, handler := range c.subscriptions {
@@ -121,6 +130,10 @@ func (c *defaultClient) connectLoop() {
 // Disconnect Disconnect
 func (c *defaultClient) Disconnect() {
 	log.Println("[MQTT] Fechando conexão:")
+
+	c.Lock()
+	defer c.Unlock()
+
 	if c.isConnected {
 		c.client.Disconnect(250)
 	}
@@ -129,6 +142,9 @@ func (c *defaultClient) Disconnect() {
 
 // IsConnected IsConnected
 func (c *defaultClient) IsConnected() bool {
+	c.Lock()
+	defer c.Unlock()
+
 	return c.isConnected
 }
 

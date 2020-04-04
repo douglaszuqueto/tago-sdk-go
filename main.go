@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	util.StatsLoop()
+	// util.StatsLoop()
 
 	cli := tago.New()
 	cli.Info()

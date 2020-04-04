@@ -33,8 +33,6 @@ type defaultClient struct {
 
 	sync.Mutex
 
-	s sync.RWMutex
-
 	subscriptions map[string]mqtt.MessageHandler
 }
 
@@ -52,29 +50,24 @@ func NewClient(id string, host, user, password string) Client {
 	return d
 }
 
-func (c *defaultClient) connectionLostHandler(client mqtt.Client, err error) {
-	log.Println("[MQTT] Conexão perdida:")
+// func (c *defaultClient) connectionLostHandler(client mqtt.Client, err error) {
+// 	log.Println("[MQTT] Conexão perdida:")
 
-	// c.s.Lock()
-	// c.isConnected = false
-	// c.s.Unlock()
-}
+// 	c.Lock()
+// 	c.isConnected = false
+// 	c.Unlock()
+// }
 
-func (c *defaultClient) onConnectHandler(client mqtt.Client) {
-	log.Println("[MQTT] Conectado:")
+// func (c *defaultClient) onConnectHandler(client mqtt.Client) {
+// 	log.Println("[MQTT] Conectado:")
 
-	// c.s.Lock()
-	// c.isConnected = true
-	// c.s.Unlock()
-
-	c.Lock()
-	defer c.Unlock()
-
-	for topic, handler := range c.subscriptions {
-		log.Println("mqtt: re-subscribing to topic:", topic)
-		c.subscribe(topic, handler)
-	}
-}
+// 	if !c.IsConnected() {
+// 		for topic, handler := range c.subscriptions {
+// 			log.Println("mqtt: re-subscribing to topic:", topic)
+// 			c.subscribe(topic, handler)
+// 		}
+// 	}
+// }
 
 func (c *defaultClient) connect(clientID string, uri *url.URL) mqtt.Client {
 	opts := mqtt.NewClientOptions()
@@ -91,8 +84,27 @@ func (c *defaultClient) connect(clientID string, uri *url.URL) mqtt.Client {
 	opts.SetWriteTimeout(10 * time.Second)
 	// opts.SetMaxReconnectInterval(5 * time.Second)
 
-	opts.SetConnectionLostHandler(c.connectionLostHandler)
-	opts.SetOnConnectHandler(c.onConnectHandler)
+	opts.SetConnectionLostHandler(func(client mqtt.Client, err error) {
+		log.Println("[MQTT] Conexão perdida:")
+
+		c.Lock()
+		c.isConnected = false
+		c.Unlock()
+	})
+
+	opts.SetOnConnectHandler(func(client mqtt.Client) {
+		log.Println("[MQTT] Conectado:")
+
+		if !c.IsConnected() {
+			c.Lock()
+			defer c.Unlock()
+			for topic, handler := range c.subscriptions {
+
+				log.Println("mqtt: re-subscribing to topic:", topic)
+				c.subscribe(topic, handler)
+			}
+		}
+	})
 
 	opts.SetUsername(c.user)
 	opts.SetPassword(c.password)

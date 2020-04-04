@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"time"
 
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago"
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/util"
@@ -141,15 +140,17 @@ func main() {
 		}
 	}()
 
-	time.Sleep(5 * time.Second)
+	fmt.Scanln()
 
-	if err := p.UnsubscribeData(); err != nil {
-		panic(err)
-	}
+	// time.Sleep(5 * time.Second)
 
-	if err := p.UnsubscribeDebug(); err != nil {
-		panic(err)
-	}
+	// if err := p.UnsubscribeData(); err != nil {
+	// 	panic(err)
+	// }
+
+	// if err := p.UnsubscribeDebug(); err != nil {
+	// 	panic(err)
+	// }
 
 	p.Close()
 

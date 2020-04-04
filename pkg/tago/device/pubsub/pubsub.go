@@ -70,8 +70,8 @@ func (d *ps) Pub(msg []byte) error {
 }
 
 func (d *ps) Sub() (<-chan *mqtt.Payload, error) {
-	// d.Lock()
-	// defer d.Unlock()
+	d.Lock()
+	defer d.Unlock()
 
 	if d.dataCh != nil {
 		return d.dataCh, nil
@@ -80,16 +80,14 @@ func (d *ps) Sub() (<-chan *mqtt.Payload, error) {
 	d.dataCh = make(chan *mqtt.Payload, dataChLen)
 
 	token := d.mqtt.client.Subscribe(dataTopic, func(_ mqtt.Client, msg mqtt.Payload) {
-		// d.RLock()
-		// defer d.RUnlock()
+		d.RLock()
+		defer d.RUnlock()
 
 		if d.dataCh == nil {
 			return
 		}
-		select {
-		case d.dataCh <- &msg:
-		default:
-		}
+
+		d.dataCh <- &msg
 	})
 
 	token.Wait()
@@ -103,8 +101,8 @@ func (d *ps) Sub() (<-chan *mqtt.Payload, error) {
 }
 
 func (d *ps) Debug() (<-chan *mqtt.Payload, error) {
-	// d.Lock()
-	// defer d.Unlock()
+	d.Lock()
+	defer d.Unlock()
 
 	if d.debugCh != nil {
 		return d.debugCh, nil
@@ -113,16 +111,18 @@ func (d *ps) Debug() (<-chan *mqtt.Payload, error) {
 	d.debugCh = make(chan *mqtt.Payload, debugChLen)
 
 	token := d.mqtt.client.Subscribe(debugTopic, func(_ mqtt.Client, msg mqtt.Payload) {
-		// d.RLock()
-		// defer d.RUnlock()
+		d.RLock()
+		defer d.RUnlock()
 
 		if d.debugCh == nil {
 			return
 		}
-		select {
-		case d.debugCh <- &msg:
-		default:
-		}
+		// select {
+		// case d.debugCh <- &msg:
+		// default:
+		// }
+
+		d.debugCh <- &msg
 	})
 
 	token.Wait()

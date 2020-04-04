@@ -50,24 +50,25 @@ func NewClient(id string, host, user, password string) Client {
 	return d
 }
 
-// func (c *defaultClient) connectionLostHandler(client mqtt.Client, err error) {
-// 	log.Println("[MQTT] Conexão perdida:")
+func (c *defaultClient) connectionLostHandler(client mqtt.Client, err error) {
+	log.Println("[MQTT] Conexão perdida:")
 
-// 	c.Lock()
-// 	c.isConnected = false
-// 	c.Unlock()
-// }
+	c.Lock()
+	c.isConnected = false
+	c.Unlock()
+}
 
-// func (c *defaultClient) onConnectHandler(client mqtt.Client) {
-// 	log.Println("[MQTT] Conectado:")
+func (c *defaultClient) onConnectHandler(client mqtt.Client) {
+	log.Println("[MQTT] Conectado:")
 
-// 	if !c.IsConnected() {
-// 		for topic, handler := range c.subscriptions {
-// 			log.Println("mqtt: re-subscribing to topic:", topic)
-// 			c.subscribe(topic, handler)
-// 		}
-// 	}
-// }
+	c.Lock()
+	defer c.Unlock()
+
+	for topic, handler := range c.subscriptions {
+		log.Println("mqtt: re-subscribing to topic:", topic)
+		c.subscribe(topic, handler)
+	}
+}
 
 func (c *defaultClient) connect(clientID string, uri *url.URL) mqtt.Client {
 	opts := mqtt.NewClientOptions()
@@ -84,27 +85,9 @@ func (c *defaultClient) connect(clientID string, uri *url.URL) mqtt.Client {
 	opts.SetWriteTimeout(10 * time.Second)
 	// opts.SetMaxReconnectInterval(5 * time.Second)
 
-	opts.SetConnectionLostHandler(func(client mqtt.Client, err error) {
-		log.Println("[MQTT] Conexão perdida:")
+	opts.SetConnectionLostHandler(c.connectionLostHandler)
 
-		c.Lock()
-		c.isConnected = false
-		c.Unlock()
-	})
-
-	opts.SetOnConnectHandler(func(client mqtt.Client) {
-		log.Println("[MQTT] Conectado:")
-
-		if !c.IsConnected() {
-			c.Lock()
-			defer c.Unlock()
-			for topic, handler := range c.subscriptions {
-
-				log.Println("mqtt: re-subscribing to topic:", topic)
-				c.subscribe(topic, handler)
-			}
-		}
-	})
+	opts.SetOnConnectHandler(c.onConnectHandler)
 
 	opts.SetUsername(c.user)
 	opts.SetPassword(c.password)

@@ -37,8 +37,6 @@ func (m *manager) Info() {
 
 // Device Device
 func (m *manager) Device() (Device, error) {
-	fmt.Println("Device manager")
-
 	e := newDevice(m.client)
 
 	return e, nil
@@ -46,8 +44,6 @@ func (m *manager) Device() (Device, error) {
 
 // Bucket Bucket
 func (m *manager) Bucket() (Bucket, error) {
-	fmt.Println("Bucket manager")
-
 	e := newBucket()
 
 	return e, nil

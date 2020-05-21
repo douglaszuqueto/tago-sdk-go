@@ -133,8 +133,8 @@ func (c *defaultClient) connectLoop() {
 func (c *defaultClient) Disconnect() {
 	log.Println("[MQTT] Fechando conexão:")
 
-	c.Lock()
-	defer c.Unlock()
+	// c.Lock()
+	// defer c.Unlock()
 
 	if c.isConnected {
 		c.client.Disconnect(250)

@@ -1,14 +1,21 @@
 include .env
 
+.EXPORT_ALL_VARIABLES:
+
 dev:
-	go run main.go
+	go run -race main.go
+
+build:
+	CGO_ENABLED=0
+
+	go build -ldflags="-s -w" -o ./bin/tago 
+	upx ./bin/tago
 
 prod: build
 	./bin/tago
 
-build:
-	CGO_ENABLED=0 go build -o ./bin/tago 
-	upx ./bin/tago
+update:
+	go get -u
+	go mod tidy
 
-race:
-	go run -race main.go
+.PHONY: dev build prod update race

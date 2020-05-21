@@ -70,8 +70,8 @@ func (d *ps) Pub(msg []byte) error {
 }
 
 func (d *ps) Sub() (<-chan *mqtt.Payload, error) {
-	d.Lock()
-	defer d.Unlock()
+	// d.Lock()
+	// defer d.Unlock()
 
 	if d.dataCh != nil {
 		return d.dataCh, nil
@@ -101,8 +101,8 @@ func (d *ps) Sub() (<-chan *mqtt.Payload, error) {
 }
 
 func (d *ps) Debug() (<-chan *mqtt.Payload, error) {
-	d.Lock()
-	defer d.Unlock()
+	// d.Lock()
+	// defer d.Unlock()
 
 	if d.debugCh != nil {
 		return d.debugCh, nil

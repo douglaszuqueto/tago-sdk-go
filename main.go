@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	// util.StatsLoop()
+	util.StatsLoop()
 
 	cli := tago.New()
 	cli.Info()
@@ -140,6 +140,17 @@ func main() {
 		}
 	}()
 
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case d := <-data:
+	// 			fmt.Println(d.Topic, d.Message.String())
+	// 		case b := <-debug:
+	// 			fmt.Println(b.Topic, b.Message.String())
+	// 		}
+	// 	}
+	// }()
+
 	fmt.Scanln()
 
 	// time.Sleep(5 * time.Second)
@@ -154,7 +165,7 @@ func main() {
 
 	p.Close()
 
-	// fmt.Scanln()
+	fmt.Scanln()
 
 	// p.Close()
 }

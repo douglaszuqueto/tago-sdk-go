@@ -24,6 +24,11 @@ ou (linux)
             * Pub
             * Debug
 
+## TODO
+
+* Adição de Contexto
+* Camada de logger - Uber Zap
+
 ## Coisas uteis
 
 ```go

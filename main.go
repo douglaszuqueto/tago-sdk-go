@@ -3,35 +3,65 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/url"
 	"os"
+	"time"
 
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago"
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/admin"
+	"github.com/douglaszuqueto/tago-sdk-go/pkg/tago/device"
 	"github.com/douglaszuqueto/tago-sdk-go/pkg/util"
 )
+
+var cli tago.Tago
 
 func main() {
 	util.StatsLoop()
 
-	cli := tago.New()
+	cli = tago.New()
 	cli.Info()
 
 	fmt.Println()
 
 	// Admin manager
-
 	adminToken := os.Getenv("ADMIN_TOKEN")
 
 	admin, err := cli.Admin(adminToken)
 	if err != nil {
 		panic(err)
 	}
-
 	admin.Info()
 
 	// Device manager
+	deviceManager(admin)
 
-	deviceAdm, err := admin.Device()
+	// Bucket manager
+	bucketManager(admin)
+
+	// Device
+	deviceTest()
+
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case d := <-data:
+	// 			fmt.Println(d.Topic, d.Message.String())
+	// 		case b := <-debug:
+	// 			fmt.Println(b.Topic, b.Message.String())
+	// 		}
+	// 	}
+	// }()
+
+	fmt.Scanln()
+}
+
+//
+// Admin Manager
+//
+
+func deviceManager(adm admin.Manager) {
+	deviceAdm, err := adm.Device()
 	if err != nil {
 		panic(err)
 	}
@@ -62,12 +92,9 @@ func main() {
 	}
 
 	fmt.Println(token[0].Name, token[0].Token)
+}
 
-	// device.List()
-	// device.Token()
-
-	// Bucket manager
-
+func bucketManager(adm admin.Manager) {
 	// bucket, err := admin.Bucket()
 	// if err != nil {
 	// 	panic(err)
@@ -75,9 +102,13 @@ func main() {
 
 	// bucket.Get()
 	// bucket.List()
+}
 
-	// Device
+//
+// Device
+//
 
+func deviceTest() {
 	deviceToken := os.Getenv("DEVICE_TOKEN")
 
 	dev, err := cli.Device(deviceToken)
@@ -85,12 +116,12 @@ func main() {
 		panic(err)
 	}
 
-	payload := util.GeneratePayload()
+	deviceSendData(dev)
+	devicePubSub(dev)
+}
 
-	msgBytes, err := json.Marshal(payload)
-	if err != nil {
-		panic(err)
-	}
+func deviceSendData(dev device.Device) {
+	payload := util.GeneratePayload()
 
 	res, err := dev.Data(payload)
 	if err != nil {
@@ -98,17 +129,17 @@ func main() {
 	}
 
 	fmt.Println("Data:", res)
+}
 
-	// Device pubsub
-
+func devicePubSub(dev device.Device) {
 	p, err := dev.PubSub()
 	if err != nil {
 		panic(err)
 	}
 
-	payload = util.GeneratePayload()
+	payload := util.GeneratePayload()
 
-	msgBytes, err = json.Marshal(payload)
+	msgBytes, err := json.Marshal(payload)
 	if err != nil {
 		panic(err)
 	}
@@ -140,32 +171,19 @@ func main() {
 		}
 	}()
 
-	// go func() {
-	// 	for {
-	// 		select {
-	// 		case d := <-data:
-	// 			fmt.Println(d.Topic, d.Message.String())
-	// 		case b := <-debug:
-	// 			fmt.Println(b.Topic, b.Message.String())
-	// 		}
-	// 	}
-	// }()
+	time.Sleep(5 * time.Second)
+	log.Println("Unsubscribing")
 
-	fmt.Scanln()
+	if err := p.UnsubscribeData(); err != nil {
+		panic(err)
+	}
 
-	// time.Sleep(5 * time.Second)
+	if err := p.UnsubscribeDebug(); err != nil {
+		panic(err)
+	}
 
-	// if err := p.UnsubscribeData(); err != nil {
-	// 	panic(err)
-	// }
-
-	// if err := p.UnsubscribeDebug(); err != nil {
-	// 	panic(err)
-	// }
+	time.Sleep(5 * time.Second)
+	log.Println("Closing")
 
 	p.Close()
-
-	fmt.Scanln()
-
-	// p.Close()
 }
